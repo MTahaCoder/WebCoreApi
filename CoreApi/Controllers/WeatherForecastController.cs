@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection.PortableExecutable;
 
 namespace CoreApi.Controllers
 {
@@ -60,6 +61,37 @@ namespace CoreApi.Controllers
             };
 
             return Ok(response);
+        }
+
+        [HttpPost]
+        [Route("postformdata/")]
+        [Consumes("application/x-www-form-urlencoded")] // Specify the content type
+        public IActionResult Post([FromForm] IFormCollection formData)
+        {
+            var headers = HttpContext.Request.Headers;
+            if (ModelState.IsValid)
+            {
+
+                // Process the form data
+                var data = new Dictionary<string, string>();
+                foreach (var key in formData.Keys)
+                {
+                    data[key] = formData[key];
+                }
+
+                var response = new
+                {
+                    Message = "Data received successfully",
+                    Header = headers,                    
+                    Data = data
+                };
+                // Process the form data
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest(ModelState);
+            }
         }
 
     }
